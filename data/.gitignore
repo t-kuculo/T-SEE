@@ -1,0 +1,8 @@
+*
+!datasets
+!datasets/*
+!raw_data
+!.gitignore
+!create_shelves.py
+!data_download.sh
+!training

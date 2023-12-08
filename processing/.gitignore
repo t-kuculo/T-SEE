@@ -1,0 +1,8 @@
+*
+!.gitignore
+!create_training_data.py
+!create_training_data_dbp.py
+!the_data
+!all_subevent_properties.csv
+!dbp_all_subevent_properties.csv
+!classes.py

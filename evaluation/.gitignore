@@ -1,0 +1,8 @@
+# Ignore everything in this directory
+*
+!output
+!minority_classes/
+!minority_classes/*
+!.gitignore
+!rem.py
+!eval.py

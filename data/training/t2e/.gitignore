@@ -1,0 +1,4 @@
+!wde_eq_train.json
+!wde_eq_test.json
+!wde_eq_val.json
+!wde_unlabelled_event.schema

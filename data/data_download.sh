@@ -8,21 +8,21 @@ grep 'http://de.dbpedia.org/resource/' ids.ttl > ids_de.ttl
 
 sed -i 's/<http:\/\/wikidata.dbpedia.org\/resource\///g ; s/> <http:\/\/www.w3.org\/2002\/07\/owl#sameAs> <http:\/\/dbpedia.org\/resource\// /g ; s/> .//g' ids_en.ttl
 rm ids.ttl
-mv ids_en.ttl wikidata_to_dbpedia_en.csv
+mv ids_en.ttl data/wikidata_to_dbpedia_en.csv
 
 # DBpedia redirects
 wget --no-check-certificate -O "redirects_en.ttl.bz2" "https://downloads.dbpedia.org/repo/dbpedia/generic/redirects/${datedbpediaids}/redirects_lang%3den_transitive.ttl.bz2"
 bzip2 -d redirects_en.ttl.bz2
 sed -i 's/> <http:\/\/dbpedia.org\/ontology\/wikiPageRedirects> <http:\/\/dbpedia.org\/resource\// /g ; s/<http:\/\/dbpedia.org\/resource\///g ; s/> .//g' redirects_en.ttl
-mv redirects_en.ttl redirects_en.csv
+mv redirects_en.ttl data/redirects_en.csv
 
 # Types
-wget --no-check-certificate -O "types.ttl.bz2" "https://databus.dbpedia.org/dbpedia/mappings/instance-types/${datedbpediaids}/instance-types_inference=transitive_lang=en.ttl.bzip2"
+wget --no-check-certificate -O "types.ttl.bz2" "https://databus.dbpedia.org/dbpedia/mappings/instance-types/${datedbpediaids}/instance-types_lang=en_transitive.ttl.bz2"
 bzip2 -d types.ttl.bz2
 grep 'http://dbpedia.org/ontology' types.ttl > types_dbo_transitive.ttl
 
 
-wget --no-check-certificate -O "types2.ttl.bz2" "https://databus.dbpedia.org/dbpedia/mappings/instance-types/${datedbpediaids}/instance-types_inference=specific_lang=en.ttl.bzip2"
+wget --no-check-certificate -O "types2.ttl.bz2" "https://databus.dbpedia.org/dbpedia/mappings/instance-types/${datedbpediaids}/instance-types_lang=en_specific.ttl.bz2"
 bzip2 -d types2.ttl.bz2
 grep 'http://dbpedia.org/ontology' types2.ttl > types_dbo_specific.ttl
 cat types_dbo_transitive.ttl types_dbo_specific.ttl > types_dbo.ttl

@@ -11,12 +11,10 @@ if not os.path.isdir("shelves"):
  
 print("Read DBpedia -> Wikidata index.")
 
-with open('wikidata_to_dbpedia_en.csv') as file:
-    #dbpedia_ids_to_wikidata_ids = pd.read_csv(file, header=None, index_col=1,
-                                             #sep=" ", squeeze=True).to_dict()
-    
-    dbpedia_ids_to_wikidata_ids = pd.read_csv(file, header=None, 
-                                              index_col=1,sep=" ").squeeze("columns").to_dict()
+with open('data/wikidata_to_dbpedia_en.csv') as file:
+    dbpedia_ids_to_wikidata_ids = pd.read_csv(file, header=None, index_col=1,
+
+                                              sep=" ", squeeze=True).to_dict()
 print("Read types (DBpedia).")
 # Dealing with nan
 tmp.update(dbpedia_ids_to_wikidata_ids)
@@ -28,10 +26,10 @@ for key in tmp:
 
 types_dbo = dict()
 print("Read DBpedia redirects.")
-with open('types_dbo.csv') as file_types_dbo:
+with open('data/types_dbo.csv') as file_types_dbo:
     for line in csv.reader(file_types_dbo, delimiter=" "):
         entity = line[0]
-        type = line[1]
+        type = line[2]
         if entity in types_dbo:
                 types_dbo[entity].add(type)
         else:
@@ -39,7 +37,7 @@ with open('types_dbo.csv') as file_types_dbo:
 
 print("Read types (Wikidata).")
 types_wd = dict()
-with open('types_wd.csv') as file_types_wd:
+with open('data/types_wd.csv') as file_types_wd:
     for line in csv.reader(file_types_wd, delimiter=" "):
         entity = line[0]
         type = line[1]
@@ -52,7 +50,7 @@ with open('types_wd.csv') as file_types_wd:
 
 # Read file redirects.csv into index
 print("Read redirects.")
-with open('redirects_en.csv') as file_redirects:
+with open('data/redirects_en.csv') as file_redirects:
     for line in csv.reader(file_redirects, delimiter=" "):
         source = line[0]
         target = line[1]
@@ -68,25 +66,23 @@ with open('redirects_en.csv') as file_redirects:
 
 all = []
 
-print("Writing shelves.")
 
 dbpedia2wd_shelve = shelve.open('shelves/dbpedia_to_wikidata_en')
 dbpedia2wd_shelve.update(dbpedia_ids_to_wikidata_ids)
 dbpedia2wd_shelve.close()
 
-print("Finished writing dbpedia_to_wikidata_en.")
+
+
+
 
 types_dbo_shelve = shelve.open('shelves/types_dbo')
 types_dbo_shelve.update(types_dbo)
 types_dbo_shelve.close()
 
-print("Finished writing types_dbo.")
-
 types_wd_shelve = shelve.open('shelves/types_wd')
 types_wd_shelve.update(types_wd)
 types_wd_shelve.close()
 
-print("Finished writing types_wd.")
 
 types = {}
 errs = 0
@@ -112,5 +108,6 @@ with open('instanceof-data.tsv') as instance_properties:
 types_shelve = shelve.open('shelves/instance_types')
 types_shelve.update(types)
 types_shelve.close()
+
 
 

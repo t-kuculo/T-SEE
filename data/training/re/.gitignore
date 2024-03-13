@@ -1,8 +1,2 @@
 *
 !.gitignore
-!wde_eq_train.json
-!wde_eq_test.json
-!wde_eq_dev.json
-!wde_sparse_re_dev.json
-!wde_sparse_re_test.json
-!wde_sparse_re_train.json

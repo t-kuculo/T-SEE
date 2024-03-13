@@ -1,6 +1,7 @@
 *
 !datasets
 !datasets/*
+!datasets/Evaluation-Results/*
 !raw_data
 !.gitignore
 !create_shelves.py

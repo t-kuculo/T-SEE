@@ -10,7 +10,7 @@ from transformers.data.processors.squad import SquadResult, SquadExample
 
 
 # Configuration Constants
-MODEL_NAME_OR_PATH = "../T-SEE/models/wde_re_model" 
+MODEL_NAME_OR_PATH = "../T-SEE/models/dbpe_with_spacy_model" 
 USE_OWN_MODEL = True
 MAX_SEQ_LENGTH = 384
 DOC_STRIDE = 128

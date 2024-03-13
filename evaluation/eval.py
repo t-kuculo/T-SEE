@@ -391,7 +391,7 @@ def end_to_end_eval(path_to_output_data, mode):
 if __name__=="__main__":
     
     training_set = "training"
-    mode = "wde"
+    mode = "dbpe"
     extra = "_with_focal_loss"
     with open("../data/"+training_set+"/t2e/"+mode+"_unlabelled_event.schema","r") as f:
         lines = [line.rstrip() for line in f]

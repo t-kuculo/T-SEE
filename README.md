@@ -20,7 +20,7 @@ python -m spacy download en
 ```
 
 ### Data creation and preprocessing
-* Follow instructions in the [EventTextWikipediaDumper](https://github.com/foranonymoussubmissions2022/EventTextWikipediaDumper) to run [MWDumper](https://www.mediawiki.org/wiki/Manual:MWDumper) and get Wikipedia articles of events in .ndjson file format. Place the resulting files into data\raw in the project folder.
+* Follow instructions in the [EventTextWikipediaDumper]((https://github.com/sgottsch/EventTextWikipediaDumper)) to run [MWDumper](https://www.mediawiki.org/wiki/Manual:MWDumper) and get Wikipedia articles of events in .ndjson file format. Place the resulting files into data\raw in the project folder.
 * To prepare Wikidata and Dbpedia dumps go to the ```data``` folder and run  ```./data_download.sh```.
 * Run ```create_shelves.py``` to assure quick access to the dumps.
 * The next step will create training data for the baselines and the multilabel classification step of our approach. Go to the ```processing``` folder and run ```create_training_data.py```.
@@ -29,8 +29,7 @@ python -m spacy download en
 * First reposition to the ```T-SEE```. folder. To train the multilabel classification model first format the multilabel training, validation and testing data by running  ```format_mlc_data.py```. Then follow up by running ```mlc.py```. This will train the model and generate the output of the model inside the ```/evaluation/output/minority_classes/mlc_output/```.
 * To train the Relation Extraction Model first generate the appropriate format for the data by running ``` python convert_data.py```, then run ```train.sh```.
 ### Evaluation
-* Finally to evaluate the performance of **T-SEE** and the baselines, and generate the output of our model go to the ```evaluation``` folder and run ```eval.py```. 
-* (Note: To get evaluation scores for the baselines, first follow instructions in their respective subfolders in the [baselines](https://github.com/foranonymoussubmissions2022/T-SEE/blob/main/baselines) folder.)
+* Finally to evaluate the performance of **T-SEE** and generate the output of our model go to the ```evaluation``` folder and run ```eval.py```. 
 
 
 #### Event Classification

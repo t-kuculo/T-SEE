@@ -3,7 +3,7 @@
 This is the code for T-SEE Transformer-based Semantic Event Extraction, based on the paper: "T-SEE: Transformer-based Semantic Event Extraction through
 Multilabel Prediction and Relation Extraction"
 
-![alt text]([https://github.com/foranonymoussubmissions2022/T-SEE/blob/main/figs/example.png](https://github.com/t-kuculo/T-SEE/blob/main/figs/example-circles.pdf))
+![alt text](https://github.com/t-kuculo/T-SEE/blob/main/figs/example.png)
 
 
 ## Steps

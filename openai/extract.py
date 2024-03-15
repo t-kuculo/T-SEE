@@ -10,12 +10,12 @@ import jsonlines
 # Load the SpaCy model
 nlp = spacy.load("en_core_web_sm")
 
-OPENAI_API_KEY='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'
+OPENAI_API_KEY=''
 client = OpenAI(api_key = OPENAI_API_KEY)
 
 
 #client = AzureOpenAI(
-#  azure_endpoint = "https://l3s-kuculo.openai.azure.com/", 
+#  azure_endpoint = , 
 #  api_key=os.getenv("AZURE_OPENAI_KEY"),  
 #  api_version="2024-02-15-preview"
 #)
@@ -126,160 +126,6 @@ def eval_scores(path):
 def save_results(results, file_path):
     with open(file_path, 'w') as f:
         json.dump(results, f, indent=4)
-
-def _calculate_f1_scores(data, mode="dbpedia", subset=""):
-    scores = {}
-    property_scores = {}
-    
-    version1_tp = 0
-    version1_fp = 0
-    version1_tn = 0
-    version1_fn = 0
-
-    for cl in all_event_types:
-        scores[cl] = {"tp":0, "fp":0, "tn":0, "fn":0}
-
-    for prop in all_properties:
-        property_scores[prop] = {"tp":0, "fp":0, "tn":0, "fn":0}
-
-    for item in data:
-
-        ground_dict = {}
-        output_dict = {}
-        output_dict = item["predicted"]
-        ground_dict = item["ground"]
-        
-        if output_dict == None:
-            output_dict = {}
-
-        for cl in ground_dict:
-            for prop in ground_dict[cl]:
-                ground_dict[cl][prop] = ground_dict[cl][prop][0]
-
-        done_already = set()
-
-        tmp_ground_dict = ground_dict.copy()
-        tmp_output_dict = output_dict.copy()
-
-        while ground_dict != {} or output_dict != {}:
-            for cl in tmp_output_dict:
-                if cl not in all_event_types:
-                    del output_dict[cl]
-
-            for cl in scores:
-                if cl in ground_dict and cl in output_dict:
-                    scores[cl]["tp"] += 1
-                    del ground_dict[cl]
-                    del output_dict[cl]
-                elif cl in ground_dict and cl not in output_dict:
-                    scores[cl]["fn"] += 1
-                    del ground_dict[cl]
-                elif cl not in ground_dict and cl in output_dict:
-                    scores[cl]["fp"] += 1
-                    del output_dict[cl]
-                elif cl not in ground_dict and cl not in output_dict and cl not in done_already:
-                    scores[cl]["tn"] += 1
-                done_already.add(cl)
-
-            for cl1 in tmp_ground_dict:
-                for cl2 in tmp_output_dict:
-                    for prop in property_scores:
-                        if prop in tmp_ground_dict[cl1] and prop in tmp_output_dict[cl2]:
-                            found = False
-                            output_value = tmp_output_dict[cl2][prop]
-                            ground_value = tmp_ground_dict[cl1][prop]
-
-                            if output_value == None or output_value == [] or output_value == "":
-                                continue
-
-                            if isinstance(output_value, int):
-                                output_value = str(output_value)
-                                if output_value == ground_value:
-                                    property_scores[prop]["tp"] += 1
-                                    version1_tp += 1
-                                else:
-                                    property_scores[prop]["fp"] += 1
-                                    property_scores[prop]["fn"] += 1
-                                    version1_fp += 1
-                                    version1_fn += 1
-                                continue
-                            
-                            if isinstance(output_value, dict):
-                                # interesting artefact
-                                with open("StrangeCase.json", "a") as f:
-                                    json.dump({"output": output_value, "ground": ground_value}, f)
-                                continue
-
-                            if isinstance(output_value, list):
-                                for val in output_value:
-                                    val = str(val)
-                                    if val == ground_value or val in ground_value or ground_value in val:
-                                        property_scores[prop]["tp"] += 1
-                                        version1_tp += 1
-                                        found = True
-                                    elif val != ground_value and val not in ground_value and ground_value not in val:
-                                        property_scores[prop]["fp"] += 1
-                                        version1_fp += 1
-                                if not found:
-                                    property_scores[prop]["fn"] += 1
-                                    version1_fn += 1
-                                    version1_fn += 1
-
-                            elif isinstance(output_value, str):
-                                if output_value == ground_value or output_value in ground_value or ground_value in output_value:
-                                    property_scores[prop]["tp"] += 1
-                                    version1_tp += 1
-                                elif output_value != ground_value and output_value not in ground_value and ground_value not in output_value:
-                                    property_scores[prop]["fp"] += 1
-                                    property_scores[prop]["fn"] += 1
-                                    version1_fp += 1
-                                    version1_fn += 1
-
-
-
-
-                            elif ground_value == output_value or ground_value in output_value or output_value in ground_value:
-                                property_scores[prop]["tp"] += 1
-                                version1_tp += 1
-                            else:
-                                property_scores[prop]["fp"] += 1
-                                property_scores[prop]["fn"] += 1
-                                version1_fp += 1
-                                version1_fn += 1
-
-                        elif prop not in tmp_ground_dict[cl1] and prop in tmp_output_dict[cl2]:
-                            output_value = tmp_output_dict[cl2][prop]
-                            if output_value == None or output_value == [] or output_value == "":
-                                continue
-
-                            if isinstance(tmp_output_dict[cl2][prop], list):
-                                property_scores[prop]["fp"] += len([i for i in tmp_output_dict[cl2][prop] if i and i!= "" and i != None and i != []])
-                            else:
-                                property_scores[prop]["fp"] += 1
-                            version1_fp += 1
-
-                        elif prop in tmp_ground_dict[cl1] and prop not in tmp_output_dict[cl2]:
-                            property_scores[prop]["fn"] += 1
-                            version1_fn += 1
-
-                        elif prop not in tmp_ground_dict[cl1] and prop not in tmp_output_dict[cl2]:
-                            property_scores[prop]["tn"] += 1
-
-            # Clean up matched event classes
-            for cl in done_already:
-                if cl in tmp_ground_dict:
-                    del tmp_ground_dict[cl]
-                if cl in tmp_output_dict:
-                    del tmp_output_dict[cl]
-
-        property_r = version1_tp / (version1_tp + version1_fn+0.00000000001)
-        property_p = version1_tp / (version1_tp + version1_fp+0.00000000001)
-        prop_f1 = (2 * (property_p * property_r) / (property_p + property_r+0.00000000001))
-
-        with open(f"{mode}_scores.json", "w") as f:
-            json.dump(scores, f)   
-        with open(f"{mode}_property_scores.json", "w") as f:
-            json.dump(property_scores, f)
 
 
 def calculate_f1_scores(data, mode="dbpedia", subset=""):
@@ -403,10 +249,6 @@ def classify_events(sentence, event_classes, run_count, mode="dbpedia"):
         f.write(json.dumps(messages))
         f.write("\n")
     
-    #completion = client.chat.completions.create(
-        #model="gpt-3.5-turbo",
-        #messages=messages
-    #)
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo-1106",
         messages = messages,
@@ -417,15 +259,6 @@ def classify_events(sentence, event_classes, run_count, mode="dbpedia"):
         presence_penalty=0,
         stop=None)
 
-    #completion = client.chat.completions.create(
-    #    model="gpt-35-turbo", 
-    #    messages = messages,
-    #    temperature=0.7,
-    #    max_tokens=800,
-    #    top_p=0.95,
-    #    frequency_penalty=0,
-    #    presence_penalty=0,
-    #    stop=None)
     
     write_prompt_and_output(sentence, completion.choices[0].message.content, mode)
     

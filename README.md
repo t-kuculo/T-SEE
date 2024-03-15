@@ -20,7 +20,7 @@ python -m spacy download en
 ```
 
 ### Data creation and preprocessing
-* Follow instructions in the [EventTextWikipediaDumper]((https://github.com/sgottsch/EventTextWikipediaDumper)) to run [MWDumper](https://www.mediawiki.org/wiki/Manual:MWDumper) and get Wikipedia articles of events in .ndjson file format. Place the resulting files into data\raw in the project folder.
+* Follow instructions in the [EventTextWikipediaDumper](https://github.com/sgottsch/EventTextWikipediaDumper) to run [MWDumper](https://www.mediawiki.org/wiki/Manual:MWDumper) and get Wikipedia articles of events in .ndjson file format. Place the resulting files into data\raw in the project folder.
 * To prepare Wikidata and Dbpedia dumps go to the ```data``` folder and run  ```./data_download.sh```.
 * Run ```create_shelves.py``` to assure quick access to the dumps.
 * The next step will create training data for the baselines and the multilabel classification step of our approach. Go to the ```processing``` folder and run ```create_training_data.py```.

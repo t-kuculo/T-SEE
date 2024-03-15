@@ -718,6 +718,8 @@ if __name__ == "__main__":
     data_path = "/home/kuculo/T-SEE/data/training/with_entities/"
     dataset = f"{data_path}dbpe_eq_test.json"
     schema_path = f"/home/kuculo/T-SEE/processing/filtered_{mode}_event2.schema"
+    analysis_mode = True
+
     with open(schema_path,"r") as f:
         lines = [line.rstrip() for line in f]
 
@@ -725,24 +727,30 @@ if __name__ == "__main__":
     all_properties = ast.literal_eval(lines[1])
     all_event_role_types = ast.literal_eval(lines[2])
 
+    if not analysis_mode:
+        step_wise_process_and_evaluate(dataset, f'{mode}_output.json', all_event_types, all_event_role_types, mode)
 
-    #step_wise_process_and_evaluate(dataset, f'{mode}_output.json', all_event_types, all_event_role_types, mode)
-
-    # Load the data from the JSON file
-    #data = load_data(f'{mode}_output.json')
-    #data = load_data('output_prefix_temporal_event_distribution.json')
-    for path in ['output_prefix_temporal_event_distribution.json', 'output_prefix_complex_sentence_structures.json',
-                 'output_prefix_geographical_diversity.json', 'output_prefix_named_entity_diversity.json',
-                 'output_prefix_semantic_diversity.json', 'output_prefix_sentence_length.json']:
-        data = load_data(path)
-
-
+        # Load the data from the JSON file
+        data = load_data(f'{mode}_output.json')
         # Calculate F1 scores
         calculate_f1_scores(data, mode)
 
-        print(path)
-
         eval_scores(f"{mode}_scores.json")
         eval_scores(f"{mode}_property_scores.json")
+        
+    else:
+        for path in [f'output_{mode}_temporal_event_distribution.json', f'output_{mode}_complex_sentence_structures.json',
+                    f'output_{mode}_geographical_diversity.json', f'output_{mode}_named_entity_diversity.json',
+                    f'output_{mode}_semantic_diversity.json', f'output_{mode}_sentence_length.json']:
+            data = load_data(path)
+
+
+            # Calculate F1 scores
+            calculate_f1_scores(data, mode)
+
+            print(path)
+
+            eval_scores(f"{mode}_scores.json")
+            eval_scores(f"{mode}_property_scores.json")
 
 

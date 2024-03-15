@@ -34,16 +34,6 @@ def subset_by_sentence_length(entries, size):
     sorted_entries = sorted(entries, key=lambda e: len(e['sentence']), reverse=True)
     return sorted_entries[:min(size, len(sorted_entries))]
 
-def _subset_by_geographical_diversity(entries, size):
-    # Select entries with diverse geographical locations mentioned across all event classes
-    def count_geographical_places(entry):
-        count = 0
-        for event_class, properties in entry['predicted'].items():
-            count += len(properties.get('place', []))
-        return count
-
-    sorted_entries = sorted(entries, key=count_geographical_places, reverse=True)
-    return sorted_entries[:min(size, len(sorted_entries))]
 
 def subset_by_geographical_diversity(entries, size):
     def count_geographical_places(entry):
@@ -54,32 +44,21 @@ def subset_by_geographical_diversity(entries, size):
     sorted_entries = sorted(entries, key=count_geographical_places, reverse=True)
     return sorted_entries[:min(size, len(sorted_entries))]
 
-def _subset_by_temporal_event_distribution(entries, size):
-    # Select entries with explicit date mentions across all event classes
-    date_entries = [e for e in entries if any('date' in properties for event_class, properties in e['predicted'].items())]
-    return random.sample(date_entries, min(size, len(date_entries)))
 
 def subset_by_temporal_event_distribution(entries, size):
-    def has_temporal_expression(entry):
-        doc = nlp(entry['sentence'])  # Assuming 'text' contains the full text of the entry
-        return any(ent.label_ == "DATE" for ent in doc.ents)  # DATE is a common label for temporal expressions
+    def count_temporal_expressions(entry):
+        doc = nlp(entry['sentence'])  # Assuming 'sentence' contains the full text of the entry
+        return sum(1 for ent in doc.ents if ent.label_ == "DATE")  # Count 'DATE' labeled entities
 
-    date_entries = [e for e in entries if has_temporal_expression(e)]
-    return random.sample(date_entries, min(size, len(date_entries)))
+    # Filter entries that contain at least one temporal expression
+    date_entries = [e for e in entries if count_temporal_expressions(e) > 0]
 
+    # Sort the filtered entries by the count of temporal expressions, in descending order
+    sorted_date_entries = sorted(date_entries, key=count_temporal_expressions, reverse=True)
 
-def _subset_by_named_entity_diversity(entries, size):
-    # Select entries with a high diversity of named entities mentioned across all event classes and their properties
-    def count_unique_named_entities(entry):
-        counts = Counter()
-        for event_class, properties in entry['predicted'].items():
-            for key, values in properties.items():
-                if isinstance(values, list):  # Assuming all named entities are listed under their properties
-                    counts.update(values)
-        return len(counts)
+    # Select the top 'size' entries with the most frequent temporal expressions
+    return sorted_date_entries[:min(size, len(sorted_date_entries))]
 
-    sorted_entries = sorted(entries, key=count_unique_named_entities, reverse=True)
-    return sorted_entries[:min(size, len(sorted_entries))]
 
 def subset_by_named_entity_diversity(entries, size):
     def count_unique_named_entities(entry):
@@ -123,8 +102,38 @@ def write_subset(subset, output_file):
 mode = "dbpedia"
 # Example usage
 input_file = f'{mode}_output.json'
-output_prefix = 'output_prefix'
+output_prefix = f'output_{mode}'
 subset_size = 100  # Specify the desired subset size
 
 # Generate subsets
 generate_subsets(input_file, output_prefix, subset_size)
+
+
+def _subset_by_named_entity_diversity(entries, size):
+    # Select entries with a high diversity of named entities mentioned across all event classes and their properties
+    def count_unique_named_entities(entry):
+        counts = Counter()
+        for event_class, properties in entry['predicted'].items():
+            for key, values in properties.items():
+                if isinstance(values, list):  # Assuming all named entities are listed under their properties
+                    counts.update(values)
+        return len(counts)
+
+    sorted_entries = sorted(entries, key=count_unique_named_entities, reverse=True)
+    return sorted_entries[:min(size, len(sorted_entries))]
+
+def _subset_by_temporal_event_distribution(entries, size):
+    # Select entries with explicit date mentions across all event classes
+    date_entries = [e for e in entries if any('date' in properties for event_class, properties in e['predicted'].items())]
+    return random.sample(date_entries, min(size, len(date_entries)))
+
+def _subset_by_geographical_diversity(entries, size):
+    # Select entries with diverse geographical locations mentioned across all event classes
+    def count_geographical_places(entry):
+        count = 0
+        for event_class, properties in entry['predicted'].items():
+            count += len(properties.get('place', []))
+        return count
+
+    sorted_entries = sorted(entries, key=count_geographical_places, reverse=True)
+    return sorted_entries[:min(size, len(sorted_entries))]

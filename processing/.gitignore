@@ -6,3 +6,5 @@
 !all_subevent_properties.csv
 !dbp_all_subevent_properties.csv
 !classes.py
+!filtered_dbpedia_event2.schema
+!filtered_wikidata_event2.schema

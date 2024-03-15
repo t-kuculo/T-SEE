@@ -4,9 +4,9 @@ We introduce two new large-scale datasets for the extraction of semantic event r
 
 |         |  DBpedia | Wikidata |
 |---------|:--------:| --------:|
-|Texts    | $43,291$ | $72,649$ |
-|Events   | $43,377$ | $79,335$ |
-|Relations| $48,280$ | $139,559$|
+|Texts    | $42,648$ | $37,988$ |
+|Events   | $42,726$ | $38,014$ |
+|Relations| $47,666$ | $63,997$|
 
 
 We derive the datasets from all Wikipedia articles of events. Event classes and relations are extracted by exploiting existing links to events and their Wikidata representations. 

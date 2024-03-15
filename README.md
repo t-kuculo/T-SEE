@@ -89,7 +89,7 @@ An event with N arguments will be written as a list of the form:
 * Then follow the instructions as described above to train the models, generate the output and evaluate the results.
 
 ### Datasets
-  * For more details on the dataset formatting, creation and statistics see the [datasets](https://github.com/foranonymoussubmissions2022/T-SEE/blob/main/data/datasets) folder.
+  * For more details on the dataset formatting, creation, and statistics see the [datasets](https://github.com/t-kuculo/T-SEE/tree/main/data/datasets) folder.
 
 
 

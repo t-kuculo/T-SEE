@@ -1,7 +1,7 @@
 # T-SEE
 
-This is the code for T-SEE Transformer-based Semantic Event Extraction, based on the paper: "T-SEE: Transformer-based Semantic Event Extraction through
-Multilabel Prediction and Relation Extraction"
+This is the code for T-SEE Transformer-based Semantic Event Extraction, based on the paper: "Transformer-Based Architectures versus
+Large Language Models in Semantic Event Extraction: Evaluating Strengths and Limitations"
 
 ![alt text](https://github.com/t-kuculo/T-SEE/blob/main/figs/example.png)
 
@@ -89,6 +89,7 @@ An event with N arguments will be written as a list of the form:
 
 ### Datasets
   * For more details on the dataset formatting, creation, and statistics see the [datasets](https://github.com/t-kuculo/T-SEE/tree/main/data/datasets) folder.
+  * For access to both datasets we provide a [Zenodo link](https://zenodo.org/records/10818676) to the datasets.
 
 
 

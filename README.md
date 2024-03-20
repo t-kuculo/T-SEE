@@ -23,7 +23,7 @@ python -m spacy download en
 * Follow instructions in the [EventTextWikipediaDumper](https://github.com/sgottsch/EventTextWikipediaDumper) to run [MWDumper](https://www.mediawiki.org/wiki/Manual:MWDumper) and get Wikipedia articles of events in .ndjson file format. Place the resulting files into data\raw in the project folder.
 * To prepare Wikidata and Dbpedia dumps go to the ```data``` folder and run  ```./data_download.sh```.
 * Run ```create_shelves.py``` to assure quick access to the dumps.
-* The next step will create training data for the baselines and the multilabel classification step of our approach. Go to the ```processing``` folder and run ```create_training_data.py```.
+* The next step will create training data for the baselines and the multilabel classification step of our approach. Go to the ```processing``` folder and run ```create_training_data.py``` to create the Wikidata dataset and ```create_training_data_dbp.py``` to create the DBpedia dataset.
 * To train and evaluate specific baselines follow instructions in their respective subfolders in the baselines folder. 
 ### Training
 * First reposition to the ```T-SEE```. folder. To train the multilabel classification model first format the multilabel training, validation and testing data by running  ```format_mlc_data.py```. Then follow up by running ```mlc.py```. This will train the model and generate the output of the model inside the ```/evaluation/output/minority_classes/mlc_output/```.

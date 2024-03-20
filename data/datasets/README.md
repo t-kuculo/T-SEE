@@ -1,6 +1,6 @@
 # Datasets for extraction of semantic event representation
 
-We introduce two new large-scale datasets for the extraction of semantic event representations based on [DBpedia](https://github.com/foranonymoussubmissions2022/O-GEE/blob/main/test/datasets/full_dbpedia.jsonl) and [Wikidata](https://github.com/foranonymoussubmissions2022/O-GEE/blob/main/test/datasets/full_wikidata.jsonl). The two datasets contain consist of $43,291$ and $72,649$ samples, respectively.
+We introduce two new large-scale datasets for the extraction of semantic event representations based on [DBpedia](https://github.com/t-kuculo/T-SEE/blob/main/data/datasets/DBP-SEE.jsonl) and [Wikidata](https://github.com/t-kuculo/T-SEE/blob/main/data/datasets/WD-SEE.jsonl). The two datasets contain consist of $42,648$ and $37,988$ samples, respectively.
 
 |         |  DBpedia | Wikidata |
 |---------|:--------:| --------:|
@@ -11,11 +11,11 @@ We introduce two new large-scale datasets for the extraction of semantic event r
 
 We derive the datasets from all Wikipedia articles of events. Event classes and relations are extracted by exploiting existing links to events and their Wikidata representations. 
 
-![alt text](https://github.com/foranonymoussubmissions2022/O-GEE/blob/main/data/datasets/ground_truth.png)
+![alt text](https://github.com/t-kuculo/T-SEE/blob/main/data/datasets/ground_truth.png)
 Example illustrating how we label texts with events and relations. The Wikipedia text on the left links to the Wikidata event on the right side, which also has a
 relation to an entity mentioned in the text (country: Syria)
 
-Both datasets follow the same formatting, similar to that of DyGie++. They are .jsonl files where each line contains a json like the one below:
+Both datasets follow the same formatting, similar to that of DyGie++. They are .jsonl files where each line contains a JSON like the one below:
 ```
 {"doc_key": 36206, 
 "dataset": "event extraction", 
@@ -32,7 +32,7 @@ An event with N arguments will be written as a list of the form:
 ```
 
 
-The   [event ontology distribution](https://github.com/foranonymoussubmissions2022/O-GEE/blob/main/test/datasets/event_ontology_distribution.json) file contains a dictionary describing the distribution of  event and property labels across the two datasets.
+<!---The   [event ontology distribution](https://github.com/foranonymoussubmissions2022/O-GEE/blob/main/test/datasets/event_ontology_distribution.json) file contains a dictionary describing the distribution of  event and property labels across the two datasets.-->
 
-Find the by-class and by-property evaluation results of O-GEE in  [O-GEE Evaluation Results](https://github.com/foranonymoussubmissions2022/O-GEE/blob/main/data/datasets/O-GEE%20Evaluation%20Results).
+<!---Find the by-class and by-property evaluation results of O-GEE in  [O-GEE Evaluation Results]-->
 

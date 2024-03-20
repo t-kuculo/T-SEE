@@ -1,3 +1,5 @@
+The following is a fork of the Hugging Face transformers repository.
+
 <!---
 Copyright 2020 The HuggingFace Team. All rights reserved.
 

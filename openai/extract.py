@@ -2,18 +2,14 @@ from openai import OpenAI
 import json
 import ast
 import spacy
-import os
 import traceback
 from openai import AzureOpenAI
-import jsonlines
 
 # Load the SpaCy model
 nlp = spacy.load("en_core_web_sm")
 
 OPENAI_API_KEY=''
 client = OpenAI(api_key = OPENAI_API_KEY)
-
-
 
 #-------------------------------------------------------------------------------
 

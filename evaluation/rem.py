@@ -5,13 +5,11 @@ from transformers import (
     AutoModelForQuestionAnswering, AutoTokenizer, 
     squad_convert_examples_to_features, SquadExample
 )
-from transformers.data.metrics.squad_metrics import compute_predictions_logits
 from transformers.data.processors.squad import SquadResult, SquadExample
+from transformers.data.metrics.squad_metrics import compute_predictions_logits
 
 
 # Configuration Constants
-MODEL_NAME_OR_PATH = "../T-SEE/models/dbpe_with_spacy_model" 
-USE_OWN_MODEL = True
 MAX_SEQ_LENGTH = 384
 DOC_STRIDE = 128
 MAX_QUERY_LENGTH = 64
@@ -23,6 +21,10 @@ BATCH_SIZE = 10
 
 # Initialize device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# Global model and tokenizer, initialized later
+model = None
+tokenizer = None
 
 def to_list(tensor):
     """Convert a tensor to a list."""
@@ -37,9 +39,8 @@ def setup_model(model_name_or_path):
 
 def create_examples(queries, context_text):
     """Create and return SquadExample objects for each query."""
-    examples = []
-    for i, query in enumerate(queries):
-        example = SquadExample(
+    return [
+        SquadExample(
             qas_id=str(i),
             question_text=query,
             context_text=context_text,
@@ -49,10 +50,10 @@ def create_examples(queries, context_text):
             is_impossible=False,
             answers=None
         )
-        examples.append(example)
-    return examples
+        for i, query in enumerate(queries)
+    ]
 
-def run_prediction(queries, context_text, model, tokenizer):
+def run_prediction(queries, context_text):
     """Run model prediction on the given queries and context."""
     examples = create_examples(queries, context_text)
     features, dataset = squad_convert_examples_to_features(
@@ -77,44 +78,42 @@ def run_prediction(queries, context_text, model, tokenizer):
             inputs = {"input_ids": batch[0], "attention_mask": batch[1], "token_type_ids": batch[2]}
             example_indices = batch[3]
             outputs = model(**inputs)
+
             for i, example_index in enumerate(example_indices):
                 eval_feature = features[example_index.item()]
                 unique_id = int(eval_feature.unique_id)
                 output = [to_list(output[i]) for output in outputs.to_tuple()]
-                start_logits, end_logits = output
-                result = SquadResult(unique_id, start_logits, end_logits)
-                all_results.append(result)
+                all_results.append(SquadResult(unique_id, output[0], output[1]))
 
-    # Define file paths for outputs
-    output_prediction_file = "predictions.json"
-    output_nbest_file = "nbest_predictions.json"
-    output_null_log_odds_file = "null_predictions.json"
-
-    predictions = compute_predictions_logits(
+    # Compute and return predictions
+    return compute_predictions_logits(
         examples,
         features,
         all_results,
         N_BEST_SIZE,
         MAX_ANSWER_LENGTH,
         DO_LOWER_CASE,
-        output_prediction_file,
-        output_nbest_file,
-        output_null_log_odds_file,
-        False,  # verbose_logging
-        True,  # version_2_with_negative
-        NULL_SCORE_DIFF_THRESHOLD,
-        tokenizer
+        None,  # output_prediction_file
+        None,  # output_nbest_file
+        None,  # output_null_log_odds_file
+        verbose_logging=False,
+        version_2_with_negative=True,
+        null_score_diff_threshold=NULL_SCORE_DIFF_THRESHOLD,
+        tokenizer=tokenizer
     )
-    return predictions
 
-def run_relation_extraction(queries, context):
+def run_relation_extraction(queries, context, mode):
     """
     Given a list of queries and a context, return a list of relations and their scores.
     """
-    predictions = run_prediction(queries, context, model, tokenizer)
-    return [predictions[key] for key in predictions.keys()]
+    global model, tokenizer
+    if not model or not tokenizer:
+        model_name_map = {
+            "wde": "../T-SEE/models/wde_re_model",  # Adjust the path as necessary
+            "dbpe": "../T-SEE/models/dbpe_re_model"  # Adjust the path as necessary
+        }
+        model_path = model_name_map.get(mode, "../T-SEE/models/wde_re_model")
+        model, tokenizer = setup_model(model_path)
 
-# Main execution
-model, tokenizer = setup_model(MODEL_NAME_OR_PATH)
-# Example usage
-# results = run_relation_extraction(queries, context)
+    predictions = run_prediction(queries, context)
+    return [predictions[key] for key in predictions.keys()]

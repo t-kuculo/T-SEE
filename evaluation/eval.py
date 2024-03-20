@@ -29,7 +29,7 @@ def predict(mode,extra="_with_focal_loss4",training_set="training"):
     for json_str in json_list:
         all_ground_samples.append(json.loads(json_str))
 
-    with open("output/minority_classes/mlc_output/"+mode+extra+".csv", "r") as f, jsonlines.open("../data/"+training_set+"/dygiepp/"+mode+"_eq_test.json","r") as f2:
+    with open("output/minority_classes/mlc_output/"+mode+extra+".csv", "r") as f, jsonlines.open("../data/"+training_set+"/re/"+mode+"_eq_test.json","r") as f2:
         output_reader = csv.reader(f, delimiter="\t")
         ground = [o for o in f2]
         for i, (output_row, sample) in enumerate(zip(output_reader, all_ground_samples)):
@@ -45,7 +45,7 @@ def predict(mode,extra="_with_focal_loss4",training_set="training"):
                 output[cl] = {}
                 for prop in classprop[cl]:
                     queries.append(cl+","+prop)
-            results = run_relation_extraction(queries, context)
+            results = run_relation_extraction(queries, context, mode)
 
             if not any(results):
                 x+=1
@@ -58,7 +58,7 @@ def predict(mode,extra="_with_focal_loss4",training_set="training"):
                     tmp2.append(query)
                     
             results = tmp1
-            #results = [(ordered_dict[0]["text"], ordered_dict[0]["probability"]) for ordered_dict in results]
+            results = [(ordered_dict[0]["text"], ordered_dict[0]["probability"]) for ordered_dict in results]
             queries = tmp2
             results, queries = [answ for answ in results if answ[0]!="empty"],[q for q, answ in zip(queries, results) if answ[0]!="empty"]
             for res_answer, query in zip(results, queries):
@@ -113,21 +113,21 @@ def isolated_predict(mode,extra="_with_focal_loss4",training_set="training"):
                 for prop in classprop[cl]:
                     queries.append(cl+","+prop)
   
-            results = run_relation_extraction(queries, context)
+            results = run_relation_extraction(queries, context, mode)
 
             if not any(results):
                 x+=1
             tmp1 = []
             tmp2 = []
-
+            # sort queries and results by probability
             for res, query in zip(results, queries):
                 if res:
                     tmp1.append(res)
                     tmp2.append(query)
                     
             results = tmp1
+            results = [(ordered_dict[0]["text"], ordered_dict[0]["probability"]) for ordered_dict in results]
             queries = tmp2
-
             results, queries = [answ for answ in results if answ[0]!="empty"],[q for q, answ in zip(queries, results) if answ[0]!="empty"]
             for res_answer, query in zip(results, queries):
                 cl = query.split(",")[0]
@@ -143,6 +143,7 @@ def isolated_predict(mode,extra="_with_focal_loss4",training_set="training"):
 
     with jsonlines.open("output/minority_classes/mlc_output/"+mode+extra+"_predictions.json","w") as f:
         f.write_all(write_samples)
+
 
 
 def get_ground_dict_from_sample(sample, data="dbp"):
@@ -442,7 +443,7 @@ if __name__=="__main__":
 
     if setting == "end_to_end":
         print("end to end:")
-        predict(mode,extra,training_set)
+        #predict(mode,extra,training_set)
 
     else:
         print("isolated:")
@@ -452,10 +453,10 @@ if __name__=="__main__":
     print("our")
     end_to_end_eval("output/minority_classes/mlc_output/"+mode+extra+"_predictions.json", mode)
     print("t2e")
-    end_to_end_eval("output/minority_classes/t2e_output/"+mode+"_test_output_30.json", mode)
+    #end_to_end_eval("output/minority_classes/t2e_output/"+mode+"_test_output_30.json", mode)
 
     eval_scores(mode+"_mlc_scores.json", "Our")
-    eval_scores(mode+"_t2e_scores.json")
+    #eval_scores(mode+"_t2e_scores.json")
 
     print("properties:")
     eval_scores(mode+"_mlc_property_scores.json", "Our")

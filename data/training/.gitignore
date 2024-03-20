@@ -1,5 +1,5 @@
 !.gitignore
-!asp
 !dygiepp
-!mlc_data
-!re
+!mlc_data/
+!re/
+!t2e/

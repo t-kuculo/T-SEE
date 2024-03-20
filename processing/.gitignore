@@ -8,3 +8,5 @@
 !classes.py
 !filtered_dbpedia_event2.schema
 !filtered_wikidata_event2.schema
+!wikidata_class_labels.json
+!wikidata_property_labels.json

@@ -1,18 +1,16 @@
-import sys, os
+import os
 import ast
 import os
 from classes import * 
 import ndjson
-from collections import Counter,  OrderedDict
+from collections import Counter
 import shelve
 import time
 import json
 import datetime
 import datefinder
 import shelve
-import csv
 import re
-rx = r"\.(?=\S)"
 import copy
 import requests
 import unicodedata
@@ -20,6 +18,9 @@ from sklearn.model_selection import train_test_split
 import jsonlines
 from dateutil import parser
 from SPARQLWrapper import SPARQLWrapper, JSON
+
+rx = r"\.(?=\S)"
+
 
 import spacy  # version 3.0.6'
 
@@ -31,7 +32,7 @@ print(1)
 def remove_non_ascii(string):
     return ''.join(char for char in string if ord(char) < 256)
 
-"""
+
 dbpedia_ids_to_wikidata_ids = shelve.open('../data/shelves/dbpedia_to_wikidata_en')
 wikidata_ids_to_dbpedia_ids = shelve.open('../data/shelves/wikidata_to_dbpedia_en')
 types_dbo = shelve.open('../data/shelves/types_dbo2')
@@ -141,7 +142,6 @@ with open("dbp_all_subevent_properties.csv", "r") as f:
     lines = f.readlines()[1:]
     for row in lines:
         row = row.rstrip().split("\t")
-        #subevent, event = row.split("\t")[0], row.split("\t")[1]
         event, property, value = row[0], row[1], row[2]
         if event not in subevents_properties:
             subevents_properties[event] = {}
@@ -303,7 +303,7 @@ for num, event_wd_id in enumerate(dataset):
 
 
             times = datefinder.find_dates(sample_context,base_date=datetime.datetime(9999, 1, 1, 0, 0), source="True")
-            times = [(time_expression[0].isoformat(),time_expression[1])  for time_expression in times]#+[dateparser_time]
+            times = [(time_expression[0].isoformat(),time_expression[1])  for time_expression in times]
             new_times = []
             for tm in times:
                 if  "." in tm[1]:
@@ -409,7 +409,7 @@ for num, event_wd_id in enumerate(dataset):
                                 a,b,c,d,e = int(a),int(b), int(c[:2]), int(d), int(e[:-1])
                                 ground_time = datetime.datetime(a,b,c,d,e)
                                 if ground_time not in new_groundtruth[property]:
-                                    new_groundtruth[property].append([start, end, start_char, end_char, property, updated_time[1]]) # it used to be ground_time.isoformat()
+                                    new_groundtruth[property].append([start, end, start_char, end_char, property, updated_time[1]]) 
                                 ground_time = []
                                 
             for ent in doc._.linkedEntities:
@@ -452,7 +452,6 @@ for num, event_wd_id in enumerate(dataset):
                         end = i.i
                         start_char = sample_context.index(txt)
                         end_char = sample_context.index(txt)+len(txt)
-                        #txt=formatting_i
                     if  formatting_i in groundtruth_values:
                         property = groundtruth_values[formatting_i]
                         if property not in new_groundtruth:
@@ -637,8 +636,7 @@ filter_clean_data(100)
 
 second_pass("dbpe__filtered_data100.json", class_filter = 100, prop_filter = 50, label="3rd")
 
-"""
-"""
+
 print(2)
 with open("dbpe_class_counter.json", "r") as f:
     C = json.load(f)
@@ -687,7 +685,6 @@ def select_minority_classes(dataset):
             for sample in dataset[event][subevent]:
                 types = list(set(sample["sample_event_link"]["types"]+sample["ground_event_types"]))
                 min = 1000*1000
-                #all_event_classes.update(types)
                 for c in types:
                     if C[c] < min:
                         min = C[c]
@@ -773,7 +770,6 @@ for i, sample in enumerate(tmp):
     else:
         context = sample["untokenized_context"]
         tmp[i]["untokenized_context_with_links"] = context
-    #context = sample["untokenized_context"]
     if context not in tmp2:
         tmp2[context] = [sample]
     else:
@@ -798,10 +794,8 @@ for i, context in enumerate(tmp2):
         cl = tmp_sample[0]["sample_event_link"]["event_class"]
         props = {prop:v for prop, v in tmp_sample[0]["sample_groundtruth"].items()}
         new_sample["untokenized_context"] = tmp_sample[0]["untokenized_context_with_links"]
-        #new_sample["untokenized_context"] = tmp_sample[0]["untokenized_context"]
         doc = nlp(new_sample["untokenized_context"])
         new_sample["tokenized_context"]= [t.text for t in doc]
-        #new_sample["tokenized_context"]= tmp_sample[0]["tokenized_context"]
         new_sample["groundtruth_events"] = [{cl : {"sample_event_link":tmp_sample[0]["sample_event_link"], "sample_groundtruth":props}}]
         all_samples.append(new_sample)
     else:
@@ -809,10 +803,8 @@ for i, context in enumerate(tmp2):
             cl = sample["sample_event_link"]["event_class"]
             props = {prop:v for prop, v in sample["sample_groundtruth"].items()}
             new_sample["untokenized_context"] = sample["untokenized_context_with_links"]
-            #new_sample["untokenized_context"] = sample["untokenized_context"]
             doc = nlp(new_sample["untokenized_context"])
             new_sample["tokenized_context"]= [t.text for t in doc]
-            #new_sample["tokenized_context"]= sample["tokenized_context"]
             if "groundtruth_events" not in new_sample:
                 new_sample["groundtruth_events"] = [{cl : {"sample_event_link":tmp_sample[0]["sample_event_link"], "sample_groundtruth":props}}]
             else:
@@ -825,7 +817,7 @@ print(11)
 
 with open("dbpedia_all_samples.json","w") as f:
     json.dump(all_samples, f)
-"""
+
 
 def query_and_clean(event_dict):
     # For each event uri, query the dbpedia endpoint to get the properties and their values
@@ -884,7 +876,6 @@ def query_and_clean(event_dict):
     return event_dict
 
 
-from dateutil import parser
 
 def integrate_updated_properties(all_samples, updated_event_dict):
     """
@@ -956,7 +947,7 @@ def integrate_updated_properties(all_samples, updated_event_dict):
 
 with open("dbpedia_all_samples.json","r") as f:
     all_samples = json.load(f)
-"""
+
 event_dict_list = []
 for sample in all_samples:
     event_dict = {}
@@ -981,11 +972,11 @@ for sample in all_samples:
                     else:
                         event_dict[event_link][property_dbo_uri].append(property_value_resource)
     event_dict_list.append(event_dict)
-"""
-#updated_event_dict = query_and_clean(event_dict_list)
 
-#with open("dbpedia_updated_event_dict.json","w") as f:
-    #json.dump(updated_event_dict, f)
+updated_event_dict = query_and_clean(event_dict_list)
+
+with open("dbpedia_updated_event_dict.json","w") as f:
+    json.dump(updated_event_dict, f)
 
 with open("dbpedia_updated_event_dict.json","r") as f:
     updated_event_dict = json.load(f)
@@ -1125,11 +1116,10 @@ def create_baseline_training_data(all_samples, path = "../data/training"):
         X = "<extra_id_0>"
         for event in sample["groundtruth_events"]:
             for event_class in event :
-                #event_class = sample["groundtruth_events"]["sample_event_link"]["event_class"]
                 event_trigger = event[event_class]["sample_event_link"]["anchor_text"]
                 X += "<extra_id_0>"+event_class+" "+ event_trigger
                 groundtruth = event[event_class]["sample_groundtruth"]
-                for property in groundtruth: #
+                for property in groundtruth: 
                         if event_class not in sync or property not in sync[event_class]:
                             continue
                         X += "<extra_id_0>"
@@ -1137,7 +1127,7 @@ def create_baseline_training_data(all_samples, path = "../data/training"):
                             X += property+" "+ str(groundtruth[property][0][5])
                         else:
                             X += property+" "+ groundtruth[property][5]
-                        X += "<extra_id_1>" #
+                        X += "<extra_id_1>" 
                 X += "<extra_id_1>"
         X += "<extra_id_1>"
         t2e_training_sample = {}
@@ -1177,8 +1167,7 @@ def create_baseline_training_data(all_samples, path = "../data/training"):
     indices = list(range(len(dygiepp_training_samples)))
     train_idx, test_idx = train_test_split(indices, test_size=0.3)
     dev_idx, test_idx = train_test_split(test_idx, test_size=0.5)
-    #train, test = train_test_split(new_dygiepp_samples, test_size=0.3)
-    #dev, test = train_test_split(test, test_size=0.5)
+
     train=[dygiepp_training_samples[i] for i in train_idx]
     test=[dygiepp_training_samples[i] for i in test_idx]
     dev=[dygiepp_training_samples[i] for i in dev_idx]
@@ -1281,7 +1270,6 @@ def create_sparse_full_data(tokenized_path, untokenized_path, output_path):
 
                     if role_type not in tmp[event_type]["arguments"]:
                         tmp[event_type]["arguments"][role_type] = []
-                    #arg_string = u_sentence[token_start:token_end]
   
                     tmp[event_type]["arguments"][role_type].append(arg_string)
                 event_type = event_type
@@ -1452,8 +1440,8 @@ train_path = path+"dbpe_eq_train.json"
 test_path = path+"dbpe_eq_test.json"
 dev_path = path+"dbpe_eq_dev.json" 
 
-#read_schema_from_dataset(list(read_dataset(train_path)), list(read_dataset(test_path)), list(read_dataset(dev_path)))
-#run_queries()
+read_schema_from_dataset(list(read_dataset(train_path)), list(read_dataset(test_path)), list(read_dataset(dev_path)))
+run_queries()
 
 with open('verified_dbpedia_event.schema', 'r') as file:
     verified_classes = ast.literal_eval(file.readline().strip())

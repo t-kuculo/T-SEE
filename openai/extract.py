@@ -14,39 +14,8 @@ OPENAI_API_KEY=''
 client = OpenAI(api_key = OPENAI_API_KEY)
 
 
-#client = AzureOpenAI(
-#  azure_endpoint = , 
-#  api_key=os.getenv("AZURE_OPENAI_KEY"),  
-#  api_version="2024-02-15-preview"
-#)
- 
- 
 
-  #-------------------------------------------------------------------------------
-
-def format_entities(text):
-    # Process the text through SpaCy NLP pipeline
-    doc = nlp(text)
-    
-    # Initialize an empty list to keep track of formatted tokens
-    formatted_tokens = []
-    last_index = 0
-    
-    # Iterate over the identified entities
-    for ent in doc.ents:
-        # Append the text before the entity
-        formatted_tokens.append(text[last_index:ent.start_char])
-        # Append the entity formatted with its label
-        formatted_tokens.append(f"[{ent.text}]({ent.label_})")
-        last_index = ent.end_char
-    
-    # Append any remaining text after the last entity
-    formatted_tokens.append(text[last_index:])
-    
-    # Join all the parts together
-    formatted_string = ''.join(formatted_tokens)
-    
-    return formatted_string
+#-------------------------------------------------------------------------------
 
 def convert_to_wikidata(extracted_events):
     converted_predictions = []
@@ -119,8 +88,6 @@ def eval_scores(path):
     macroP /= len(scoresF)
     macroR /= len(scoresF)
     macroF1 /= len(scoresF) 
-    #macroF1 = macroP*2*macroR/(macroP+macroR)
-
     print(" &","%.2f" % macroP, "&", "%.2f" % macroR, "&", "%.2f" % macroF1, "&","%.2f" % microP, "&","%.2f" % microR, "&","%.2f" % microF1, " \\")
     
 def save_results(results, file_path):
@@ -211,6 +178,7 @@ def calculate_f1_scores(data, mode="dbpedia", subset=""):
         json.dump(property_scores, f)
 
     return d
+
 def write_prompt_and_output(prompt, output, mode="dbpedia"):
     with open(f"{mode}_prompt_and_output.jsonl", "a") as f:
         f.write(json.dumps({"prompt": prompt, "output": output}) + "\n")
@@ -345,16 +313,6 @@ def extract_properties(sentence, event_classes, event_schema, run_count, mode="d
         f.write(json.dumps(messages))
         f.write("\n")
 
-    #completion = client.chat.completions.create(
-    #    model="gpt-35-turbo", 
-    #    messages = messages,
-    #    temperature=0.7,
-    #    max_tokens=800,
-    #    top_p=0.95,
-    #    frequency_penalty=0,
-    #    presence_penalty=0,
-    #    stop=None)
-        
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo-1106",
         messages = messages,

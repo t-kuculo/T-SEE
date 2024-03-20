@@ -347,7 +347,8 @@ if __name__=="__main__":
     
     # Set paths and parameters
     model_path = 'bert-base-uncased'
-    ev_schema_path = f"../data/training/t2e/{mode}_unlabelled_event.schema"
+    dataset = 'wikidata' if mode == 'wde' else 'dbpedia'
+    ev_schema_path = f"../processing/filtered_{dataset}_event2.schema"
     train_path = f'../data/training/mlc_data/{mode}_multilabel_train.csv'
     test_path = f'../data/training/mlc_data/{mode}_multilabel_test.csv'
     dev_path = f'../data/training/mlc_data/{mode}_multilabel_dev.csv'

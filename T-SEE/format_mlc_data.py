@@ -31,7 +31,7 @@ def load_data(part="train", source="wikidata"):
 
 def read_schema(source="wikidata"):
     schema_file = "filtered_wikidata_event2.schema" if source == "wikidata" else "filtered_dbpedia_event2.schema"
-    with open(f"../processing/t2e/{schema_file}") as file:
+    with open(f"../processing/{schema_file}") as file:
         lines = [line.rstrip() for line in file]
     return ast.literal_eval(lines[0]), ast.literal_eval(lines[1]), ast.literal_eval(lines[2])
 

@@ -27,7 +27,7 @@ python -m spacy download en
 * To train and evaluate specific baselines follow instructions in their respective subfolders in the baselines folder. 
 ### Training
 * First reposition to the ```T-SEE```. folder. To train the multilabel classification model first format the multilabel training, validation and testing data by running  ```format_mlc_data.py```. Then follow up by running ```mlc.py```. This will train the model and generate the output of the model inside the ```/evaluation/output/minority_classes/mlc_output/```.
-* To train the Relation Extraction Model first generate the appropriate format for the data by running ``` python convert_data.py```, then run ```train.sh```.
+* To train the Relation Extraction Model first generate the appropriate format for the data by running ``` python convert_data.py```, then run ```train.sh```, adjusting file paths according to which dataset is being trained.
 ### Evaluation
 * Finally to evaluate the performance of **T-SEE** and generate the output of our model go to the ```evaluation``` folder and run ```eval.py```. 
 
@@ -59,7 +59,7 @@ python -m spacy download en
 ## Working with a new dataset
 To test our approach on other events ontologies or datasets follow the steps as described below.
 
-![alt text](https://github.com/foranonymoussubmissions2022/T-SEE/blob/main/figs/pipeline.png)
+![alt text](https://github.com/t-kuculo/T-SEE/blob/main/figs/pipeline.png)
 
 * Format the dataset as follows. Each line represents a JSON file containing text, its sentences, and events in their respective sentences:
 
@@ -86,6 +86,29 @@ An event with N arguments will be written as a list of the form:
 
 
 * Then follow the instructions as described above to train the models, generate the output and evaluate the results.
+
+# L-SEE
+
+## Generating Predictions
+
+1. **Prediction Generation**: Navigate to the `openai` folder. Execute `extract.py` to generate predictions along with their respective scores. This script also tracks prompts and identifies any formatting errors that might occur during the prediction process, generating corresponding files.
+
+    ```
+    cd openai
+    python extract.py
+    ```
+
+2. **Creating Subsets for Experiments**: To replicate the experiments from Section 6, run `create_subsets.py`. This script prepares specific subsets of the data for focused evaluation. The code is easily modifiable to accommodate additional subset generation strategies.
+
+    ```
+    python create_subsets.py
+    ```
+
+3. **Evaluating on Subsets**: Adjust the analysis_mode to True in `extract.py`. Rerun `extract.py` to generate performance metrics on these subsets.
+
+    ```
+    python extract.py  
+    ```
 
 ### Datasets
   * For more details on the dataset formatting, creation, and statistics see the [datasets](https://github.com/t-kuculo/T-SEE/tree/main/data/datasets) folder.

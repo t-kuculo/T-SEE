@@ -32,7 +32,7 @@ An event with N arguments will be written as a list of the form:
 ```
 
 
-<!---The   [event ontology distribution](https://github.com/foranonymoussubmissions2022/O-GEE/blob/main/test/datasets/event_ontology_distribution.json) file contains a dictionary describing the distribution of  event and property labels across the two datasets.-->
+The   [event ontology distribution](https://github.com/t-kuculo/T-SEE/blob/main/data/datasets/event_ontology_distribution.json) file contains a dictionary describing the distribution of  event and property labels across the two datasets.
 
-<!---Find the by-class and by-property evaluation results of O-GEE in  [O-GEE Evaluation Results]-->
+<!---Find the by-class and by-property evaluation results of T-SEE in  [T-SEE Evaluation Results]-->
 

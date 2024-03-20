@@ -17,7 +17,7 @@ python transformers/examples/pytorch/question-answering/run_qa.py \
   --test_file  training_data/wde_sparse_re_test2.json \
   --per_gpu_train_batch_size 12 \
   --learning_rate 3e-5 \
-  --num_train_epochs 30.0 \
+  --num_train_epochs 30 \
   --max_seq_length 384 \
   --doc_stride 128 \
   --output_dir models/wde_re_model \

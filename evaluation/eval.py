@@ -427,8 +427,6 @@ def end_to_end_eval(path_to_output_data, mode,):
         json.dump(property_scores, f)
 
 
-
-
 if __name__=="__main__":
     setting = "end_to_end"
     training_set = "training"

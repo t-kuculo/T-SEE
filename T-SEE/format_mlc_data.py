@@ -1,102 +1,60 @@
 import json
-import copy
+import csv
 from collections import Counter
-import os
-all_keys = []
-class_counter =  Counter()
-data = []
+import ast
 
-def load_data(part = "train"):
-    c = Counter()
-    data = []
-    t_samples = []
-    u_samples = []
+def load_data(part="train", source="wikidata"):
+    event_counter = Counter()
+    data, t_samples, u_samples = [], [], []
     event_classes = set()
-    if part == "dev":
-        t = "val"
-    else:
-        t = part
-    with open("../data/training/re/wde_eq_"+part+".json", 'r') as json_file1, open("../data/training/t2e/wde_eq_"+t+".json", 'r') as json_file2:
-        json_list1 = list(json_file1)
-        json_list2 = list(json_file2)
 
-    for json_str1, json_str2 in zip(json_list1, json_list2):
-        t_samples.append(json.loads(json_str1))
-        u_samples.append(json.loads(json_str2))
-    
-    xx = set(json_list1)
-    yy = set(json_list2)
-    zz = ([item for item, count in Counter(json_list2).items() if count > 1])
+    part_map = {"dev": "val"}
+    part = part_map.get(part, part)
+    prefix = "wde" if source == "wikidata" else "dbpe"
+
+    with open(f"../data/training/re/{prefix}_eq_{part}.json") as file1, open(f"../data/training/t2e/{prefix}_eq_{part}.json") as file2:
+        for line1, line2 in zip(file1, file2):
+            t_samples.append(json.loads(line1))
+            u_samples.append(json.loads(line2))
+
     for t_sample, u_sample in zip(t_samples, u_samples):
         event_types = []
-        for i, sentence in enumerate(t_sample["sentences"]):
+        for i, _ in enumerate(t_sample["sentences"]):
             for event in t_sample["events"][i]:
-                token_start = event[0][0] 
-                token_end = event[0][1] 
-                event_type = event[0][2] 
-                c.update({event_type:1})
-                event_classes.update({event_type})
+                _, _, event_type = event[0]
+                event_counter.update({event_type: 1})
+                event_classes.add(event_type)
                 event_types.append(event_type)
-                class_counter.update({event_type})
-        data.append({"label":event_types, "text": u_sample["text"]})
+        data.append({"label": event_types, "text": u_sample["text"]})
 
-    return data, list(event_classes), class_counter.most_common(1000)
+    return data, list(event_classes), event_counter.most_common(1000)
 
-import pandas as pd   
-import csv
-import ast
-import os
-# read from schema all event types
-with open("../data/training/t2e/wde_unlabelled_event.schema","r") as f:
-    lines = [line.rstrip() for line in f]
-event_classes = ast.literal_eval(lines[0])
-event_properties = ast.literal_eval(lines[1])
-event_class_properties = ast.literal_eval(lines[2])
-a = []
+def read_schema(source="wikidata"):
+    schema_file = "filtered_wikidata_event2.schema" if source == "wikidata" else "filtered_dbpedia_event2.schema"
+    with open(f"../processing/t2e/{schema_file}") as file:
+        lines = [line.rstrip() for line in file]
+    return ast.literal_eval(lines[0]), ast.literal_eval(lines[1]), ast.literal_eval(lines[2])
 
-#with open("all_class_labels.json") as f: #uncomment for wikidata
-    #class_labels = json.load(f)
-# comment for wikidata
-
-for part in ["train","test", "dev"]:
-    data, event_classes, cc = load_data(part)
-    a.append(event_classes)
-    with open("../data/training/mlc_data/wde_multilabel_"+part+".csv", "w") as csvfile:
-        fieldnames = ["id","text"]+a[0]
+def write_csv(part, data, event_classes, source="wikidata"):
+    prefix = "wde" if source == "wikidata" else "dbpe"
+    with open(f"../data/training/mlc_data/{prefix}_multilabel_{part}.csv", "w") as csvfile:
+        fieldnames = ["id", "text"] + event_classes
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for i, entry in enumerate(data):
-            x = dict()
-            x["id"] = i
-            x["text"] = entry["text"]
-            for t in a[0]:
-                if t not in entry["label"]:
-                    x[t] = 0
-                else:
-                    x[t] = 1
-            writer.writerow(x)
+            row = {"id": i, "text": entry["text"], **{event: int(event in entry["label"]) for event in event_classes}}
+            writer.writerow(row)
 
-print(set(a[0])==set(a[1]))
-print(set(a[0])==set(a[2]))
-print(set(a[1])==set(a[2]))
+def main(source="wikidata"):
+    all_event_classes = []
+
+    for part in ["train", "test", "dev"]:
+        data, part_event_classes, _ = load_data(part, source)
+        all_event_classes.append(part_event_classes)
+        write_csv(part, data, part_event_classes, source)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+if __name__ == "__main__":
+    for source in ["wikidata", "dbpedia"]:
+        main(source)
 

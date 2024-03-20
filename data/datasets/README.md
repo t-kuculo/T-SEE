@@ -13,7 +13,7 @@ We derive the datasets from all Wikipedia articles of events. Event classes and 
 
 ![alt text](https://github.com/t-kuculo/T-SEE/blob/main/data/datasets/ground_truth.png)
 Example illustrating how we label texts with events and relations. The Wikipedia text on the left links to the Wikidata event on the right side, which also has a
-relation to an entity mentioned in the text (country: Syria)
+relation to an entity mentioned in the text (country: Syria).
 
 Both datasets follow the same formatting, similar to that of DyGie++. They are .jsonl files where each line contains a JSON like the one below:
 ```

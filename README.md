@@ -59,7 +59,7 @@ python -m spacy download en
 ## Working with a new dataset
 To test our approach on other events ontologies or datasets follow the steps as described below.
 
-![alt text](https://github.com/t-kuculo/T-SEE/blob/main/figs/pipeline.png)
+![alt text](https://github.com/t-kuculo/T-SEE/blob/main/figs/TSEE-pipeline.png)
 
 * Format the dataset as follows. Each line represents a JSON file containing text, its sentences, and events in their respective sentences:
 
@@ -88,6 +88,8 @@ An event with N arguments will be written as a list of the form:
 * Then follow the instructions as described above to train the models, generate the output and evaluate the results.
 
 # L-SEE
+
+![alt text](https://github.com/t-kuculo/T-SEE/blob/main/figs/LSEE-pipeline.png)
 
 ## Generating Predictions
 

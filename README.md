@@ -91,7 +91,7 @@ An event with N arguments will be written as a list of the form:
 
 ## Generating Predictions
 
-1. **Prediction Generation**: Navigate to the `openai` folder. Execute `extract.py` to generate predictions along with their respective scores. This script also tracks prompts and identifies any formatting errors that might occur during the prediction process, generating corresponding files.
+1. **Prediction Generation**: Navigate to the `openai` folder. Setup the OPENAI_API_KEY at the top of the `extract.py` file then run it to generate predictions along with their respective scores. This script also tracks prompts and identifies any formatting errors that might occur during the prediction process, generating corresponding files.
 
     ```
     cd openai
